@@ -1,6 +1,6 @@
-# Process Audit Tool
+# Process Audit
 
-The process audit tool is a Linux command line utility that provides information about file and network operations performed while executing an application.
+The Process Audit tool is a Linux command line utility programmed in Python, which collects network and file activity while executing a process.
 
 ## Planned Features
 
@@ -17,12 +17,13 @@ The process audit tool is a Linux command line utility that provides information
 
 You must have Python3 installed on your system.
 
-### Installing
+### How to use
 
-Install the development version from the master repository:
+Get the source from this repository
 
 ```sh
-pip install --user url --upgrade
+git clone https://github.com/joaompinto/paudit
+python3 paudit/paudit/paudit.py
 ```
 
 ### Using

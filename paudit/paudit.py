@@ -257,8 +257,14 @@ class SyscallTracer(Application):
     def syscall(self, process):
         state = process.syscall_state
         syscall = state.event(self.syscall_options)
-        if syscall and (syscall.result is not None or self.options.enter):
-            self.displaySyscall(syscall)
+        if syscall.result is not None:  # Existing syscall
+            if syscall.name == "openat":
+                if syscall.result > 0:   # We don't care about failed calls
+                    filename = [arg for arg in syscall.arguments if arg.name == 'filename']
+                    print("Opening file", filename[0].getText())
+
+        #if syscall and (syscall.result is not None or self.options.enter):
+        #    self.displaySyscall(syscall)
 
         # Break at next syscall
         process.syscall()
@@ -266,8 +272,8 @@ class SyscallTracer(Application):
     def processExited(self, event):
         # Display syscall which has not exited
         state = event.process.syscall_state
-        if (state.next_event == "exit") and (not self.options.enter) and state.syscall:
-            self.displaySyscall(state.syscall)
+        #if (state.next_event == "exit") and (not self.options.enter) and state.syscall:
+        #    self.displaySyscall(state.syscall)
 
         # Display exit message
         error("*** %s ***" % event)
@@ -307,6 +313,7 @@ class SyscallTracer(Application):
         self.syscallTrace(process)
 
     def main(self):
+        self.options.no_stdout = True
         if self.options.profiler:
             from ptrace.profiler import runProfiler
 
@@ -332,7 +339,7 @@ class SyscallTracer(Application):
 
     def createChild(self, program):
         pid = Application.createChild(self, program)
-        error("execve(%s, %s, [/* 40 vars */]) = %s" % (program[0], program, pid))
+        print(f"Executing process {pid}, invoking: {program}")
         return pid
 
 
